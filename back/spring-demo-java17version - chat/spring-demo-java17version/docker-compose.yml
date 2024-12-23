@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  chat-service:
+    image: chat_img
+    #    ports:
+    #      - "8080:8080"
+    environment:
+      - DB_IP=host.docker.internal
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chat-ms.rule=PathPrefix(`/ws`)"
+      - "traefik.http.services.chat-ms.loadbalancer.server.port=8082"
+      - "traefik.http.middlewares.chat-ms-ws.headers.customRequestHeaders.Connection=Upgrade"
+      - "traefik.http.middlewares.chat-ms-ws.headers.customRequestHeaders.Upgrade=websocket"
+      - "traefik.http.routers.chat-ms.middlewares=chat-ms-ws"
+
+    networks:
+      demo_net:
+        aliases:
+          - chat-service
+
+networks:
+  demo_net:
+    external: true

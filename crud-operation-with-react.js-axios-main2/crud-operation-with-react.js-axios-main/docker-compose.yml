@@ -1,0 +1,43 @@
+#version: '3'
+#
+#services:
+#
+#  react:
+#    build:
+#      context: ./
+#      dockerfile: ./Dockerfile
+#    ports:
+#      - "3003:3000"
+#    environment:
+#      - BACKEND=172.30.0.2
+#    networks:
+#      demo_net:
+#        ipv4_address: 172.30.0.10
+#
+#networks:
+#  demo_net:
+#    external: true
+
+version: '3'
+
+services:
+  react:
+    image: frontend_img
+#    ports:
+#      - "3003:3000"  # Map port 3003 on host to port 3000 in the container
+    environment:
+      - USER_SERVICE_HOST=person-service
+      - DEVICE_SERVICE_HOST=device-service
+      - CHAT_SERVICE_HOST=chat-service
+      
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    
+    networks:
+      - demo_net
+
+networks:
+  demo_net:
+    external: true

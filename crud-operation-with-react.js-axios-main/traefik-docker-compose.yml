@@ -1,0 +1,28 @@
+########################For Traefik#####################################
+services:
+
+  reverse-proxy:
+    image: traefik:v3.2
+    command:
+      - --api.insecure=true
+      - --providers.docker
+      - --accesslog=true
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --log.level=DEBUG
+      - --entrypoints.web.address=:81
+    ports:
+      - "81:81"
+      - "8083:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik_logs:/var/log/traefik
+    networks:
+      - demo_net
+
+networks:
+  demo_net:
+    external: true
+    driver: bridge
+
+volumes:
+  traefik_logs:

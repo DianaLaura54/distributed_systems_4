@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  person-service:  # Unique service name for the device microservice
+    image: person_img
+    #    ports:
+    #      - "8082:8082"
+    environment:
+      - DB_IP=host.docker.internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.person-ms.rule=PathPrefix(`/person`)"
+      - "traefik.http.services.person-ms.loadbalancer.server.port=8087"
+    networks:
+      demo_net:
+        aliases:
+          - person-service  # Explicit alias for network communication
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      demo_net:
+        aliases:
+          - traefik-service  # Explicit alias for network communication
+
+
+networks:
+  demo_net:
+    external: true
+

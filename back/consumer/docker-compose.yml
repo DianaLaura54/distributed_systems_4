@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  consumer-service:
+    image: consumer_img
+    #    ports:
+    #      - "8080:8080"
+    environment:
+      - DB_IP=host.docker.internal
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.consumer-ms.rule=PathPrefix(`/event`)"
+      - "traefik.http.services.consumer-ms.loadbalancer.server.port=8084"
+
+    networks:
+      demo_net:
+        aliases:
+          - consumer-service
+
+networks:
+  demo_net:
+    external: true
