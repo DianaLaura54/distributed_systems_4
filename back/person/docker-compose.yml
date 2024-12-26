@@ -10,7 +10,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.person-ms.rule=PathPrefix(`/person`)"
-      - "traefik.http.services.person-ms.loadbalancer.server.port=8087"
+      - "traefik.http.services.person-ms.loadbalancer.server.port=8085"
     networks:
       demo_net:
         aliases:
