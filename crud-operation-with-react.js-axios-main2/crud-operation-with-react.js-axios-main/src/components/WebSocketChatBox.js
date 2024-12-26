@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // Ensure jwt-decode is installed
+import { jwtDecode } from "jwt-decode";
 
 const WebSocketChatBox = () => {
     const [message, setMessage] = useState("");
@@ -13,7 +13,7 @@ const WebSocketChatBox = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        // Check if the user is logged in (valid token)
+       
         if (!token || !verifyToken(token)) {
             navigate("/login");
             return;
@@ -21,17 +21,17 @@ const WebSocketChatBox = () => {
 
         const userFlag = `chatPageOpen_${token}`;
 
-        // If the user already has the chat page open, redirect them
+      
         if (sessionStorage.getItem(userFlag)) {
             setError("You already have this page open in another tab.");
             navigate("/");
             return;
         }
 
-        // Mark this tab as having the session open
+        
         sessionStorage.setItem(userFlag, "true");
 
-        // Listen for changes in localStorage (other tab closing or logging out)
+      
         window.addEventListener("storage", handleStorageChange);
 
         const ws = new WebSocket("/ws");
@@ -56,7 +56,7 @@ const WebSocketChatBox = () => {
         };
 
         return () => {
-            // Clean up the session on component unmount
+            
             ws.close();
             sessionStorage.removeItem(userFlag);
             window.removeEventListener("storage", handleStorageChange);
@@ -81,9 +81,9 @@ const WebSocketChatBox = () => {
     };
 
     const handleStorageChange = (event) => {
-        // If the session flag was removed (e.g., by another tab), log the user out
+      
         if (event.key === `chatPageOpen_${localStorage.getItem("token")}` && event.newValue === null) {
-            navigate("/login"); // Redirect user to login page or home
+            navigate("/login"); 
         }
     };
 
@@ -148,7 +148,7 @@ const WebSocketChatBox = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("name");
         sessionStorage.removeItem(userFlag);
-        window.localStorage.setItem(userFlag, null); // Clear flag in localStorage for all tabs
+        window.localStorage.setItem(userFlag, null); 
         navigate("/login");
     };
 
@@ -156,7 +156,7 @@ const WebSocketChatBox = () => {
         navigate("/DevicePersonPage");
     };
 
-    // Define styles object here
+   
     const styles = {
         chatContainer: {
             display: "flex",

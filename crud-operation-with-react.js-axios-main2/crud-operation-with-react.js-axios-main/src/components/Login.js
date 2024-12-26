@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Message } from 'semantic-ui-react';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Correct import for jwtDecode
+import { jwtDecode } from 'jwt-decode'; 
 
 function Login() {
   const [name, setName] = useState('');
@@ -10,11 +10,11 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Function to verify the token
+ 
   const verifyToken = (token) => {
     try {
       const decoded = jwtDecode(token);
-      console.log('Decoded Token:', decoded); // Log the decoded token for debugging
+      console.log('Decoded Token:', decoded); 
       const currentTime = Date.now() / 1000;
   
       if (decoded.exp < currentTime) {
@@ -25,7 +25,7 @@ function Login() {
       }
   
       console.log('Token is valid');
-      return decoded; // Return the full decoded token
+      return decoded;
     } catch (error) {
       console.error('Token decoding failed:', error.message);
       setError('Token verification failed. Please log in again.');
@@ -45,10 +45,10 @@ function Login() {
     try {
       const response = await axios.post('/person/login', { name, password });
   
-      console.log('Login API response:', response.data);  // Log the token response data
+      console.log('Login API response:', response.data);
   
       const token = response.data;
-      console.log('Token:', token);  // Log the token
+      console.log('Token:', token);  
   
       localStorage.setItem('token', token);
       localStorage.setItem('name',name);
@@ -56,9 +56,9 @@ function Login() {
       const decodedToken = verifyToken(token);
       if (!decodedToken) return;
   
-      console.log('Decoded Token:', decodedToken); // Log the full decoded token
+      console.log('Decoded Token:', decodedToken); 
   
-      const { id, role } = decodedToken; // Update based on the token structure
+      const { id, role } = decodedToken; 
       console.log('Extracted ID:', id);
       console.log('Extracted Role:', role);
   
@@ -68,8 +68,7 @@ function Login() {
         navigate('/choice');
       } else if (role.toLowerCase() === 'user') {
         console.log("user");
-        //navigate('/DevicePersonPage');
-
+    
         navigate('/WebSocketChatBox');
       }
     } catch (error) {

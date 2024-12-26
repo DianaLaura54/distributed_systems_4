@@ -3,7 +3,7 @@ import { Button, Form } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 import LoadingBar from 'react-top-loading-bar';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode to decode the token
+import {jwtDecode} from 'jwt-decode';
 
 export default function Update() {
   const [id, setID] = useState(null);
@@ -13,7 +13,7 @@ export default function Update() {
   const [progress, setProgress] = useState(0);
   const history = useNavigate();
 
-  // Verify the token and check if the user is an admin
+ 
   const verifyToken = (token) => {
     try {
       const decoded = jwtDecode(token);
@@ -27,10 +27,10 @@ export default function Update() {
 
       if (decoded.role !== 'admin') {
         console.error('User is not an admin');
-        return false; // Ensure the user is an admin
+        return false; 
       }
 
-      return true; // Token is valid and the user is an admin
+      return true; 
     } catch (error) {
       console.error('Error decoding token:', error.message);
       localStorage.removeItem('token');
@@ -39,12 +39,12 @@ export default function Update() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Get token from localStorage
+    const token = localStorage.getItem('token'); 
 
     if (!token || !verifyToken(token)) {
-      history('/'); // Redirect to login if token is invalid or user is not admin
+      history('/'); 
     } else {
-      // Only proceed if the user is an admin
+    
       setID(localStorage.getItem('ID'));
       setName(localStorage.getItem('Name')); 
       setRole(localStorage.getItem('Role')); 
@@ -52,9 +52,9 @@ export default function Update() {
     }
   }, [history]);
 
-  // Update the user data on the server
+ 
   const updateAPIData = () => {
-    const token = localStorage.getItem('token'); // Get token from localStorage
+    const token = localStorage.getItem('token'); 
 
     axios.put(`/person/${id}`, { 
       name,
@@ -62,18 +62,18 @@ export default function Update() {
       password,
     }, {
       headers: {
-        Authorization: `Bearer ${token}`, // Send token with the request
+        Authorization: `Bearer ${token}`, 
       }
     })
     .then(() => {
-      history('/read'); // Redirect to the read page after successful update
+      history('/read'); 
     })
     .catch((error) => {
       console.error('Error updating data:', error);
     });
   };
 
-  // Handle the update button click
+ 
   const handleButtonClick = () => {
     setProgress(100); 
     updateAPIData();  

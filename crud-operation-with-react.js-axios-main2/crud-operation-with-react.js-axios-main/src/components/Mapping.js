@@ -16,7 +16,7 @@ export default function Mapping() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/'); // Redirect to login if no token
+      navigate('/');
       return;
     }
 
@@ -25,15 +25,15 @@ export default function Mapping() {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
-        localStorage.removeItem('token'); // Remove expired token
-        navigate('/'); // Redirect to login
+        localStorage.removeItem('token'); 
+        navigate('/'); 
       } else if (decoded.role !== 'admin') {
-        navigate('/'); // Redirect non-admin users to login
+        navigate('/'); 
       }
     } catch (error) {
       console.error('Error decoding token:', error.message);
       localStorage.removeItem('token');
-      navigate('/'); // Redirect on token error
+      navigate('/'); 
     }
   }, [navigate]);
 
@@ -49,9 +49,9 @@ export default function Mapping() {
   const postMapping = async () => {
     const token = localStorage.getItem('token');
     try {
-      setProgress(70); // Update progress before sending the request
+      setProgress(70); 
 
-      // Send the request to the API endpoint
+     
       const response = await axios.post(
         `/device/person/insert/${clientId}/${deviceId}`,
         {},
@@ -61,17 +61,17 @@ export default function Mapping() {
       if (response.status === 200) {
         setSuccess(true);
         setError('');
-        setProgress(100); // Complete progress on success
+        setProgress(100); 
         setTimeout(() => {
-          navigate('/read3'); // Navigate after successful mapping
+          navigate('/read3'); 
         }, 1000);
       } else {
-        // If the request failed, reset progress and show error
+       
         setProgress(0);
         setError('Failed to create mapping.');
       }
     } catch (error) {
-      setProgress(0); // Reset progress on error
+      setProgress(0); 
       console.error('Error posting mapping data:', error);
 
       if (error.response) {
@@ -87,7 +87,7 @@ export default function Mapping() {
 
   const handleButtonClick = (e) => {
     e.preventDefault();
-    setProgress(30); // Start progress
+    setProgress(30);
     setError('');
     setSuccess(false);
 

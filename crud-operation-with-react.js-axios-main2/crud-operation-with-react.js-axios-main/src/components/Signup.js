@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Message } from 'semantic-ui-react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Correct import for jwtDecode
+import {jwtDecode} from 'jwt-decode'; 
 
 function SignUp() {
   const [name, setName] = useState('');
@@ -22,7 +22,7 @@ function SignUp() {
         return false;
       }
 
-      return decoded; // Return decoded token
+      return decoded; 
     } catch (error) {
       setError('Token verification failed. Please try again.');
       localStorage.removeItem('token');

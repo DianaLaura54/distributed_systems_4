@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import {jwtDecode} from 'jwt-decode'; 
 
 const DevicePersonPage = () => {
     const [devices, setDevices] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
-    const [deviceId, setDeviceId] = useState(''); // State for input box
+    const [deviceId, setDeviceId] = useState(''); 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDevices = async () => {
             try {
-                const token = localStorage.getItem('token'); // Get token from localStorage
+                const token = localStorage.getItem('token'); 
 
                 if (!token) {
                     setErrorMessage('Token is missing. Please log in again.');
@@ -20,15 +20,15 @@ const DevicePersonPage = () => {
                     return;
                 }
 
-                const decodedToken = jwtDecode(token); // Decode the token
-                const clientId = decodedToken.id; // Extract the clientId from the token
+                const decodedToken = jwtDecode(token);
+                const clientId = decodedToken.id; 
 
                 if (!clientId) {
                     setErrorMessage('User ID is not available in token.');
                     return;
                 }
 
-                // Fetch the devices for the clientId
+                
                 const response = await axios.get(`/device/person/${clientId}`);
                 console.log('Fetched devices:', response.data);
 
@@ -75,7 +75,7 @@ const DevicePersonPage = () => {
 
          
 
-            {/* Display Devices */}
+            {}
             {devices.length > 0 ? (
                 <ul>
                     {devices.map((device) => (

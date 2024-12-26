@@ -3,7 +3,7 @@ import { Button, Form } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 import LoadingBar from 'react-top-loading-bar';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';  // Importing jwt-decode to decode the JWT
+import {jwtDecode} from 'jwt-decode';  
 
 export default function Update2() {
   const [id, setID] = useState(null);
@@ -13,40 +13,40 @@ export default function Update2() {
   const [progress, setProgress] = useState(0);
   const history = useNavigate();
 
-  // Function to verify the token and check if the user is admin
+  
   const verifyToken = (token) => {
     try {
-      const decoded = jwtDecode(token); // Decode the token
-      const currentTime = Date.now() / 1000; // Get current time in seconds
+      const decoded = jwtDecode(token); 
+      const currentTime = Date.now() / 1000; 
 
-      // Check if token is expired
+     
       if (decoded.exp < currentTime) {
         console.error('Token has expired');
-        localStorage.removeItem('token'); // Remove expired token
-        return false; // Expired token
+        localStorage.removeItem('token');
+        return false; 
       }
 
-      // Check if the user role is admin
+      
       if (decoded.role !== 'admin') {
         console.error('User is not an admin');
-        return false; // Not an admin
+        return false; 
       }
 
-      return true; // Valid and admin token
+      return true;
     } catch (error) {
       console.error('Token decoding failed:', error.message);
-      localStorage.removeItem('token'); // Remove invalid token
-      return false; // Invalid token
+      localStorage.removeItem('token'); 
+      return false; 
     }
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Retrieve token from localStorage
+    const token = localStorage.getItem('token'); 
 
     if (!token || !verifyToken(token)) {
-      history('/');  // Redirect to the login page if token is invalid or expired
+      history('/');  
     } else {
-      // If token is valid and the user is an admin, set initial form values
+     
       setID(localStorage.getItem('ID'));
       setDescription(localStorage.getItem('Description'));
       setAddress(localStorage.getItem('Address'));
@@ -55,21 +55,21 @@ export default function Update2() {
   }, [history]);
 
   const updateAPIData = () => {
-    const token = localStorage.getItem('token'); // Retrieve token again for the request
+    const token = localStorage.getItem('token'); 
 
-    // Set up the authorization header with the token
+    
     const headers = {
       Authorization: `Bearer ${token}`,
     };
 
-    // Make the PUT request with the Authorization header
+   
     axios.put(`/device/${id}`, { 
       description,
       address,
       hourly 
     }, { headers })
     .then(() => {
-      history('/read2'); // Redirect to the read2 page after successful update
+      history('/read2'); 
     })
     .catch((error) => {
       console.error('Error updating data:', error);

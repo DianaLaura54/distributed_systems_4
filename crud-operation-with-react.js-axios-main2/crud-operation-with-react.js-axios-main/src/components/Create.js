@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Form, Message, Dropdown } from 'semantic-ui-react';
 import LoadingBar from 'react-top-loading-bar';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Correct import for jwt-decode
+import { jwtDecode } from 'jwt-decode'; 
 
 export default function Create() {
   const [name, setName] = useState('');
@@ -14,13 +14,13 @@ export default function Create() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
-  // UseEffect to check if the user is logged in and has admin privileges
+ 
   useEffect(() => {
     const token = localStorage.getItem('token');
     
     if (!token) {
       setError('You must be logged in to access this page.');
-      navigate('/'); // Redirect to login if no token
+      navigate('/'); 
       return;
     }
 
@@ -28,29 +28,29 @@ export default function Create() {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
 
-      // Check if the token is expired
+      
       if (decoded.exp < currentTime) {
         setError('Your session has expired. Please log in again.');
         localStorage.removeItem('token');
-        navigate('/'); // Redirect to login if token expired
+        navigate('/'); 
         return;
       }
 
-      // Check if the user has admin role
+      
       if (!decoded || decoded.role.toLowerCase() !== 'admin') {
         setError('Access restricted: Admin role required.');
-        navigate('/'); // Redirect if user is not an admin
+        navigate('/');
         return;
       }
     } catch (error) {
       console.error('Error decoding token:', error.message);
       setError('Invalid session. Please log in again.');
       localStorage.removeItem('token');
-      navigate('/'); // Redirect on token error
+      navigate('/'); 
     }
   }, [navigate]);
 
-  // Function to validate fields
+ 
   const validateFields = () => {
     if (!name || !role || !password) {
       setError('Please fill in all fields.');
@@ -60,7 +60,7 @@ export default function Create() {
     return true;
   };
 
-  // Function to post the data to the backend
+  
   const postData = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -78,7 +78,7 @@ export default function Create() {
         }, 
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Send the token in the request header
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
@@ -93,14 +93,14 @@ export default function Create() {
           setSuccess(true);
           setError('');
           try {
-            // Second API call for device authorization
+          
             const secondResponse = await axios.post(`/device/${window.idUser}`, {
               personId, 
               name,
               role,
             }, {
               headers: {
-                Authorization: `Bearer ${token}`, // Send the token in the request header
+                Authorization: `Bearer ${token}`, 
               },
             });
 

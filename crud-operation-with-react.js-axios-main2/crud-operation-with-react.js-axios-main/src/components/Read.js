@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Table, Input } from 'semantic-ui-react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Corrected import statement for jwt-decode
+import {jwtDecode} from 'jwt-decode'; 
 
 export default function Read() {
   const [APIData, setAPIData] = useState([]);
@@ -14,26 +14,26 @@ export default function Read() {
   
   const navigate = useNavigate();
 
-  // Verify token validity and check if the user is admin
+
   const verifyToken = (token) => {
     try {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
 
-      // Check if the token is expired
+      
       if (decoded.exp < currentTime) {
         console.error('Token has expired');
         localStorage.removeItem('token');
         return false;
       }
 
-      // Check if the user has admin role
+  
       if (decoded.role !== 'admin') {
         console.error('User is not an admin');
         return false;
       }
 
-      return decoded; // Token is valid and the user is an admin
+      return decoded; 
     } catch (error) {
       console.error('Error decoding token:', error.message);
       localStorage.removeItem('token');
@@ -41,31 +41,31 @@ export default function Read() {
     }
   };
 
-  // UseEffect to check if the user is an admin and fetch data
+ 
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Get token from localStorage
+    const token = localStorage.getItem('token'); 
 
     if (!token || !verifyToken(token)) {
-      // Redirect to the login page if the token is invalid or the user is not an admin
+  
       navigate('/'); 
     } else {
-      getData(); // Fetch data if the token is valid and the user is an admin
+      getData(); 
     }
   }, [navigate]);
 
-  // Fetch all users' data
+
   const getData = () => {
-    const token = localStorage.getItem('token'); // Get token from localStorage
+    const token = localStorage.getItem('token'); 
 
     if (!verifyToken(token)) {
-      return; // If the token is invalid or expired, exit early
+      return; 
     }
 
     console.log('Fetching user data...');
 
     axios.get(API_URL, {
       headers: {
-        Authorization: `Bearer ${token}`, // Send token with the request
+        Authorization: `Bearer ${token}`, 
       }
     })
     .then((response) => {
@@ -77,18 +77,18 @@ export default function Read() {
     });
   };
 
-  // Fetch user by ID
+  
   const getUserById = () => {
     if (userID) {
-      const token = localStorage.getItem('token'); // Get token from localStorage
+      const token = localStorage.getItem('token'); 
 
       if (!verifyToken(token)) {
-        return; // If the token is invalid or expired, exit early
+        return; 
       }
 
       axios.get(`${API_URL}/${userID}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Send token with the request
+          Authorization: `Bearer ${token}`, 
         }
       })
       .then((response) => {
@@ -100,7 +100,7 @@ export default function Read() {
     }
   };
 
-  // Set data to localStorage for updating user info
+  
   const setData = (data) => {
     let { id, name, role, password } = data;
     localStorage.setItem('ID', id);
@@ -109,33 +109,33 @@ export default function Read() {
     localStorage.setItem('Password', password);
   };
 
-  // Delete user and associated device data
+ 
   const onDelete = (id) => {
-    const token = localStorage.getItem('token'); // Get token from localStorage
+    const token = localStorage.getItem('token'); 
 
     if (!verifyToken(token)) {
-      return; // If the token is invalid or expired, exit early
+      return;
     }
 
     console.log(`Attempting to delete user with ID: ${id}`);
 
     axios.delete(`${API_URL}/${id}`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Send token with the request
+        Authorization: `Bearer ${token}`, 
       }
     })
     .then((response) => {
       console.log('User deleted successfully:', response.data);
       return axios.delete(`${DELETE_URL}/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Send token with the request
+          Authorization: `Bearer ${token}`,
         }
       });
     })
     .then((response) => {
       console.log('Associated devices deleted successfully:', response.data);
       setAPIData([]); 
-      getData(); // Refresh data after deletion
+      getData(); 
     })
     .catch((error) => {
       console.error('Error deleting data:', error);

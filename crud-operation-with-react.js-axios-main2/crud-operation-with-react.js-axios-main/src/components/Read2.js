@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Table, Input } from 'semantic-ui-react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Corrected import
+import {jwtDecode} from 'jwt-decode';
 
 export default function Read2() {
     const [APIData, setAPIData] = useState([]);
@@ -11,44 +11,44 @@ export default function Read2() {
     const API_URL = '/device';
     const navigate = useNavigate();
 
-    // Function to verify the token and check if the user is admin
+    
     const verifyToken = (token) => {
         try {
-            const decoded = jwtDecode(token); // Decode the token
-            const currentTime = Date.now() / 1000; // Get current time in seconds
+            const decoded = jwtDecode(token); 
+            const currentTime = Date.now() / 1000; 
             
-            // Check if token is expired
+            
             if (decoded.exp < currentTime) {
                 console.error('Token has expired');
-                localStorage.removeItem('token'); // Remove expired token
-                return false; // Expired token
+                localStorage.removeItem('token');
+                return false; 
             }
 
-            // Check if the user role is admin
+           
             if (decoded.role !== 'admin') {
                 console.error('User is not an admin');
-                return false; // Not an admin
+                return false; 
             }
 
-            return true; // Valid and admin token
+            return true; 
         } catch (error) {
             console.error('Token decoding failed:', error.message);
-            localStorage.removeItem('token'); // Remove invalid token
-            return false; // Invalid token
+            localStorage.removeItem('token');
+            return false; 
         }
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token'); // Retrieve token from localStorage
+        const token = localStorage.getItem('token'); 
 
         if (!token || !verifyToken(token)) {
-            navigate('/');  // Redirect to the login page if token is invalid or expired
+            navigate('/');  
         } else {
-            getData(token);  // If the token is valid and the user is an admin, fetch data
+            getData(token);  
         }
     }, [navigate]);
 
-    // Fetch data for all devices
+   
     const getData = (token) => {
         axios.get(API_URL, {
             headers: { Authorization: `Bearer ${token}` }
@@ -62,7 +62,7 @@ export default function Read2() {
         });
     };
 
-    // Fetch device data by ID
+    
     const getUserById = () => {
         const token = localStorage.getItem('token');
         if (userID && token) {
@@ -78,7 +78,7 @@ export default function Read2() {
         }
     };
 
-    // Store data for updating the device
+   
     const setData = (data) => {
         const { id, description, address, hourly } = data; 
         localStorage.setItem('ID', id);
@@ -87,7 +87,7 @@ export default function Read2() {
         localStorage.setItem('Hourly', hourly);
     };
 
-    // Delete a device
+    
     const onDelete = (id) => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -95,7 +95,7 @@ export default function Read2() {
                 headers: { Authorization: `Bearer ${token}` }
             })
             .then(() => {
-                getData(token);  // Refresh data after deletion
+                getData(token);  
             })
             .catch((error) => {
                 console.error('Error deleting data:', error);

@@ -18,7 +18,7 @@ export default function Update3() {
     const token = localStorage.getItem('token'); 
 
     if (!token) {
-      navigate('/'); // Redirect to login if no token
+      navigate('/');
       return;
     }
 
@@ -27,15 +27,15 @@ export default function Update3() {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
-        localStorage.removeItem('token'); // Remove expired token
-        navigate('/'); // Redirect to login
+        localStorage.removeItem('token'); 
+        navigate('/'); 
       } else if (decoded.role !== 'admin') {
-        navigate('/'); // Redirect non-admin users
+        navigate('/'); 
       }
     } catch (error) {
       console.error('Error decoding token:', error.message);
       localStorage.removeItem('token');
-      navigate('/'); // Redirect on token error
+      navigate('/'); 
     }
 
     setDeviceId(localStorage.getItem('ID')); 
