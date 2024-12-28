@@ -34,7 +34,7 @@ public class DeviceController {
         this.personService = personService;
     }
 
-    // Helper method for authenticating and validating the role
+
     private Claims authenticate(String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Unauthorized");

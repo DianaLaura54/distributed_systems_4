@@ -38,23 +38,23 @@ public class PersonService {
     public List<PersonDTO> findPersons() {
         List<Device> deviceList = DeviceRepository.findAll();
 
-        // Create a list to hold the PersonDTOs
+
         List<PersonDTO> personDTOList = new ArrayList<>();
 
         for (Device device : deviceList) {
-            // Get the associated Person from the Device
+
             Person person = device.getPerson();
 
-            // Create a new PersonDTO, even if the person is null
+
             PersonDTO personDTO = new PersonDTO();
 
-            // Map fields, allowing for null IDs
+
             if (person != null) {
-                personDTO.setId(person.getId()); // This may be null
+                personDTO.setId(person.getId());
 
             } else {
-                // Set default values if the person is null
-                personDTO.setId(null); // or any default value like -1
+
+                personDTO.setId(null);
 
             }
 

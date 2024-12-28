@@ -19,7 +19,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         System.out.println("New connection established: " + session.getId());
-        sessions.add(session); // Add new session to the set
+        sessions.add(session);
     }
 
     @Override
@@ -27,13 +27,13 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
 
         if (payload.equals("TYPING")) {
-            // Notify all other users that someone is typing
+
             broadcastTyping(session);
         } else if (payload.equals("STOP_TYPING")) {
-            // Notify all other users that someone stopped typing
+
             broadcastStopTyping(session);
         } else {
-            // Broadcast regular message to all clients
+
             broadcastMessage(session, payload);
         }
     }
@@ -47,7 +47,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void broadcastTyping(WebSocketSession sender) throws IOException {
-        // Notify all clients except the sender that someone is typing
+
         for (WebSocketSession session : sessions) {
             if (session != sender && session.isOpen()) {
                 session.sendMessage(new TextMessage("TYPING"));
@@ -56,7 +56,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void broadcastStopTyping(WebSocketSession sender) throws IOException {
-        // Notify all clients except the sender that someone stopped typing
+
         for (WebSocketSession session : sessions) {
             if (session != sender && session.isOpen()) {
                 session.sendMessage(new TextMessage("STOP_TYPING"));
@@ -66,7 +66,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        sessions.remove(session); // Remove session on disconnect
+        sessions.remove(session);
         System.out.println("Connection closed: " + session.getId());
     }
 }

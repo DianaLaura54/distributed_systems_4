@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class JwtUtils {
 
-    private static final String SECRET_KEY  = "xyggxfgcfguyuyyuyuyuyuyuyuycgfucfgucghicghichgicg";
+    private static final String SECRET_KEY  = "xyggxfgcfguyuyyuyuyuyuyuyuycgfucfgucghicghichgicg"; // Generate a secure key
     private static final long jwtExpirationMs = 864000000;
 
 

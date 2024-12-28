@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private final WebSocketHandler myWebSocketHandler;
 
-    // Constructor Injection
+
     public WebSocketConfig(WebSocketHandler myWebSocketHandler) {
         this.myWebSocketHandler = myWebSocketHandler;
     }
@@ -22,6 +22,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(myWebSocketHandler, "/ws")
                 .addInterceptors(new HttpSessionHandshakeInterceptor())
-                .setAllowedOrigins("*"); // Allows all origins, adjust as necessary
+                .setAllowedOrigins("*");
     }
 }
