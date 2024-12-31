@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
@@ -10,34 +10,20 @@ const WebSocketChatBox = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    const chatWindowRef = useRef(null); // Reference to chatWindow container
+
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-       
         if (!token || !verifyToken(token)) {
             navigate("/login");
             return;
         }
 
-        const userFlag = `chatPageOpen_${token}`;
-
-      
-        if (sessionStorage.getItem(userFlag)) {
-            setError("You already have this page open in another tab.");
-            navigate("/");
-            return;
-        }
-
-        
-        sessionStorage.setItem(userFlag, "true");
-
-      
-        window.addEventListener("storage", handleStorageChange);
-
         const ws = new WebSocket("/ws");
 
         ws.onopen = () => {
-            console.log("Connected to the WebSocket server");
+            console.log("Connected to WebSocket server");
             setSocket(ws);
         };
 
@@ -56,10 +42,7 @@ const WebSocketChatBox = () => {
         };
 
         return () => {
-            
             ws.close();
-            sessionStorage.removeItem(userFlag);
-            window.removeEventListener("storage", handleStorageChange);
         };
     }, [navigate]);
 
@@ -70,20 +53,11 @@ const WebSocketChatBox = () => {
 
             if (decoded.exp < currentTime) {
                 localStorage.removeItem("token");
-                localStorage.removeItem("name");
                 return false;
             }
             return true;
-        } catch (error) {
-            console.error("Token verification failed:", error.message);
+        } catch {
             return false;
-        }
-    };
-
-    const handleStorageChange = (event) => {
-      
-        if (event.key === `chatPageOpen_${localStorage.getItem("token")}` && event.newValue === null) {
-            navigate("/login"); 
         }
     };
 
@@ -96,10 +70,19 @@ const WebSocketChatBox = () => {
                 updatedUsers.delete("User");
                 return updatedUsers;
             });
-        } else if (data.startsWith("Message:")) {
+        } else if (data.startsWith("SEEN:")) {
+            const messageId = data.substring(5);
+            setChatMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg.id === messageId ? { ...msg, seen: true } : msg
+                )
+            );
+        } else {
+            const [messageId, sender, ...content] = data.split(":");
+            const text = content.join(":");
             setChatMessages((prevMessages) => [
                 ...prevMessages,
-                data.substring(8),
+                { id: messageId, sender, text, seen: false },
             ]);
             setTypingUsers(new Set());
         }
@@ -107,19 +90,18 @@ const WebSocketChatBox = () => {
 
     const sendMessage = () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            const formattedMessage = `${localStorage.getItem("name")}: ${message}`;
+            const name = localStorage.getItem("name");
+            const formattedMessage = `${name}:${message}`;
             socket.send(formattedMessage);
-            setChatMessages((prevMessages) => [...prevMessages, formattedMessage]);
             setMessage("");
-            setTypingUsers((prevUsers) => {
-                const updatedUsers = new Set(prevUsers);
-                updatedUsers.delete(localStorage.getItem("name"));
-                return updatedUsers;
-            });
             socket.send("STOP_TYPING");
-        } else {
-            console.error("WebSocket is not connected");
-            setError("WebSocket is not connected. Please refresh the page.");
+        }
+    };
+
+    const markMessageAsSeen = (messageId, sender) => {
+        const currentUser = localStorage.getItem("name");
+        if (socket && socket.readyState === WebSocket.OPEN && sender !== currentUser) {
+            socket.send(`SEEN:${messageId}`);
         }
     };
 
@@ -156,7 +138,8 @@ const WebSocketChatBox = () => {
         navigate("/DevicePersonPage");
     };
 
-   
+    const currentUser = localStorage.getItem("name");
+
     const styles = {
         chatContainer: {
             display: "flex",
@@ -165,7 +148,8 @@ const WebSocketChatBox = () => {
             justifyContent: "space-between",
             padding: "20px",
             backgroundColor: "#f1f1f1",
-            height: "100vh",
+            height: "80vh", // Ensure the container is full screen
+            overflow: "hidden", // To prevent overflow from children
         },
         error: {
             color: "red",
@@ -180,14 +164,18 @@ const WebSocketChatBox = () => {
             marginBottom: "20px",
             backgroundColor: "#fff",
             padding: "10px",
+            color: "#333", // Explicitly set color to dark text
         },
+        
         chatMessagesContainer: {
             maxHeight: "100%",
             overflowY: "scroll",
+            position: "relative",
         },
         chatMessage: {
             display: "flex",
             marginBottom: "10px",
+            position: "relative", // Ensure relative positioning for seen indicator
         },
         chatAvatar: {
             marginRight: "10px",
@@ -227,6 +215,8 @@ const WebSocketChatBox = () => {
         logoutContainer: {
             display: "flex",
             justifyContent: "center",
+            gap: "10px", // Add some space between buttons
+            marginTop: "10px", // Ensure there's space between chat and buttons
         },
         redirectButton: {
             padding: "10px 15px",
@@ -237,7 +227,6 @@ const WebSocketChatBox = () => {
             cursor: "pointer",
             fontSize: "16px",
             transition: "background-color 0.3s",
-            marginRight: "10px",
         },
         logoutButton: {
             padding: "10px 15px",
@@ -248,6 +237,36 @@ const WebSocketChatBox = () => {
             cursor: "pointer",
             fontSize: "16px",
             transition: "background-color 0.3s",
+        },
+        seenText: {
+            position: "absolute",
+            right: "10px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            backgroundColor: "#e0e0e0", // Light gray background for the seen text
+            borderRadius: "12px",
+            fontSize: "14px",
+            color: "green",
+            padding: "2px 8px",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease",
+            fontWeight: "bold",
+        },
+    };
+
+    const handleMouseMove = (event) => {
+        const chatWindowElement = chatWindowRef.current;
+        const chatWindowWidth = chatWindowElement.offsetWidth;
+        const mousePosition = event.clientX - chatWindowElement.getBoundingClientRect().left;
+        const threshold = chatWindowWidth * 0.8; // 80% of the chat window width
+
+        // If the mouse is over 80% of the chat window width, mark the message as seen
+        if (mousePosition >= threshold) {
+            chatMessages.forEach(msg => {
+                if (!msg.seen) {
+                    markMessageAsSeen(msg.id, msg.sender);
+                }
+            });
         }
     };
 
@@ -255,12 +274,21 @@ const WebSocketChatBox = () => {
         <div style={styles.chatContainer}>
             {error && <div style={styles.error}>{error}</div>}
 
-            <div style={styles.chatWindow}>
+            <div 
+                ref={chatWindowRef} 
+                style={styles.chatWindow}
+                onMouseMove={handleMouseMove} // Attach mouse move event to chat window
+            >
                 <div style={styles.chatMessagesContainer}>
-                    {chatMessages.map((msg, index) => (
-                        <div key={index} style={styles.chatMessage}>
-                            <div style={styles.chatAvatar}>💬</div>
-                            <div style={styles.chatText}>{msg}</div>
+                    {chatMessages.map((msg) => (
+                        <div key={msg.id} style={styles.chatMessage}>
+                            <strong>{msg.sender}: </strong>
+                            <span>{msg.text}</span>
+                            {msg.seen && (
+                                <span style={styles.seenText}>
+                                    (Seen)
+                                </span>
+                            )}
                         </div>
                     ))}
                     {[...typingUsers].map((user, index) => (
