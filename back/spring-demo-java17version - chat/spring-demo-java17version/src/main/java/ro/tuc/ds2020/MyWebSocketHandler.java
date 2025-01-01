@@ -35,7 +35,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             String messageId = payload.substring(5);
             markMessageSeen(messageId, session);
         } else {
-            // Parse name and message
+
             int separatorIndex = payload.indexOf(":");
             if (separatorIndex > -1) {
                 String name = payload.substring(0, separatorIndex).trim();
@@ -43,9 +43,9 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                 String messageId = String.valueOf(System.currentTimeMillis());
                 String formattedMessage = messageId + ":" + name + ": " + content;
 
-                // Track and broadcast the message
+
                 seenTracker.put(messageId, new HashSet<>());
-                messageSenders.put(messageId, session); // Track the sender
+                messageSenders.put(messageId, session);
                 broadcastMessage(session, formattedMessage);
             }
         }
@@ -60,20 +60,20 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void markMessageSeen(String messageId, WebSocketSession viewer) throws IOException {
-        // Check if the message exists in the tracker
+
         if (seenTracker.containsKey(messageId)) {
-            // Get the original sender of the message
+
             WebSocketSession sender = messageSenders.get(messageId);
 
-            // Prevent the sender from marking their own message as seen
+
             if (sender != null && sender.equals(viewer)) {
-                return; // Do nothing if the viewer is the sender
+                return;
             }
 
-            // Add the viewer to the seenTracker
+
             seenTracker.get(messageId).add(viewer);
 
-            // Notify the sender about the "SEEN" status
+
             if (sender != null && sender.isOpen()) {
                 sender.sendMessage(new TextMessage("SEEN:" + messageId));
             }
@@ -102,7 +102,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
 
-        // Remove the session from seenTracker and messageSenders
+
         messageSenders.entrySet().removeIf(entry -> entry.getValue().equals(session));
         for (Set<WebSocketSession> viewers : seenTracker.values()) {
             viewers.remove(session);

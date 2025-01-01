@@ -10,7 +10,7 @@ const WebSocketChatBox = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const chatWindowRef = useRef(null); // Reference to chatWindow container
+    const chatWindowRef = useRef(null); 
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -148,8 +148,8 @@ const WebSocketChatBox = () => {
             justifyContent: "space-between",
             padding: "20px",
             backgroundColor: "#f1f1f1",
-            height: "80vh", // Ensure the container is full screen
-            overflow: "hidden", // To prevent overflow from children
+            height: "80vh", 
+            overflow: "hidden", 
         },
         error: {
             color: "red",
@@ -164,7 +164,7 @@ const WebSocketChatBox = () => {
             marginBottom: "20px",
             backgroundColor: "#fff",
             padding: "10px",
-            color: "#333", // Explicitly set color to dark text
+            color: "#333", 
         },
         
         chatMessagesContainer: {
@@ -175,7 +175,7 @@ const WebSocketChatBox = () => {
         chatMessage: {
             display: "flex",
             marginBottom: "10px",
-            position: "relative", // Ensure relative positioning for seen indicator
+            position: "relative",
         },
         chatAvatar: {
             marginRight: "10px",
@@ -215,8 +215,8 @@ const WebSocketChatBox = () => {
         logoutContainer: {
             display: "flex",
             justifyContent: "center",
-            gap: "10px", // Add some space between buttons
-            marginTop: "10px", // Ensure there's space between chat and buttons
+            gap: "10px", 
+            marginTop: "10px", 
         },
         redirectButton: {
             padding: "10px 15px",
@@ -243,7 +243,7 @@ const WebSocketChatBox = () => {
             right: "10px",
             top: "50%",
             transform: "translateY(-50%)",
-            backgroundColor: "#e0e0e0", // Light gray background for the seen text
+            backgroundColor: "#e0e0e0", 
             borderRadius: "12px",
             fontSize: "14px",
             color: "green",
@@ -258,9 +258,8 @@ const WebSocketChatBox = () => {
         const chatWindowElement = chatWindowRef.current;
         const chatWindowWidth = chatWindowElement.offsetWidth;
         const mousePosition = event.clientX - chatWindowElement.getBoundingClientRect().left;
-        const threshold = chatWindowWidth * 0.8; // 80% of the chat window width
-
-        // If the mouse is over 80% of the chat window width, mark the message as seen
+        const threshold = chatWindowWidth * 0.8; 
+      
         if (mousePosition >= threshold) {
             chatMessages.forEach(msg => {
                 if (!msg.seen) {
@@ -277,7 +276,7 @@ const WebSocketChatBox = () => {
             <div 
                 ref={chatWindowRef} 
                 style={styles.chatWindow}
-                onMouseMove={handleMouseMove} // Attach mouse move event to chat window
+                onMouseMove={handleMouseMove} 
             >
                 <div style={styles.chatMessagesContainer}>
                     {chatMessages.map((msg) => (
