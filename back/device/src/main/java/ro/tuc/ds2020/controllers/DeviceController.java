@@ -39,7 +39,6 @@ public class DeviceController {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Unauthorized");
         }
-
         String token = authorizationHeader.substring(7);
         try {
             return Jwts.parser()
@@ -62,7 +61,6 @@ public class DeviceController {
     public ResponseEntity<List<DeviceDTO>> getDevices(@RequestHeader("Authorization") String authorizationHeader) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         List<DeviceDTO> dtos = deviceService.findDevices();
         for (DeviceDTO dto : dtos) {
             Link deviceLink = linkTo(methodOn(DeviceController.class).getDevice(authorizationHeader, dto.getId())).withRel("DeviceDetails");
@@ -75,7 +73,6 @@ public class DeviceController {
     public ResponseEntity<Integer> insertDevice(@RequestHeader("Authorization") String authorizationHeader, @Valid @RequestBody DeviceDetailsDTO deviceDTO) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         Integer deviceID = deviceService.insert(deviceDTO);
         return new ResponseEntity<>(deviceID, HttpStatus.CREATED);
     }
@@ -84,14 +81,12 @@ public class DeviceController {
     public ResponseEntity<DeviceDetailsDTO> getDevice(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Integer deviceId) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         DeviceDetailsDTO dto = deviceService.findDeviceById(deviceId);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @GetMapping(value = "/person/{clientId}")
     public ResponseEntity<List<DeviceDetailsDTO>> getDeviceByClient( @PathVariable("clientId") Integer clientId) {
-
         List<DeviceDetailsDTO> dtos = deviceService.linkPersonToDevice(clientId);
         if (dtos.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -103,7 +98,6 @@ public class DeviceController {
     public ResponseEntity<List<PersonDTO>> getPersons(@RequestHeader("Authorization") String authorizationHeader) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         List<PersonDTO> dtos = personService.findPersons();
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
@@ -112,7 +106,6 @@ public class DeviceController {
     public ResponseEntity<Void> deleteDevice(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Integer deviceId) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         deviceService.deleteDeviceById(deviceId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -121,7 +114,6 @@ public class DeviceController {
     public ResponseEntity<DeviceDetailsDTO> updateDevice(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Integer deviceId, @Valid @RequestBody DeviceDetailsDTO deviceDTO) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         DeviceDetailsDTO updatedDevice = deviceService.updateDevice(deviceId, deviceDTO);
         return new ResponseEntity<>(updatedDevice, HttpStatus.OK);
     }
@@ -130,7 +122,6 @@ public class DeviceController {
     public ResponseEntity<String> insertPersonWithClientIdAndDeviceId(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("clientId") Integer clientId, @PathVariable("deviceId") Integer deviceId) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         try {
             deviceService.insertPersonWithClientId(clientId, deviceId);
             return ResponseEntity.ok("Person with Client ID " + clientId + " linked to Device ID " + deviceId + " successfully.");
@@ -143,7 +134,6 @@ public class DeviceController {
     public ResponseEntity<String> updatePersonWithClientIdAndDeviceId(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("clientId") Integer clientId, @PathVariable("deviceId") Integer deviceId) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         try {
             deviceService.updatePersonWithClientId(clientId, deviceId);
             return ResponseEntity.ok("Person with Client ID " + clientId + " updated to Device ID " + deviceId + " successfully.");
@@ -156,7 +146,6 @@ public class DeviceController {
     public ResponseEntity<Void> deleteDevices(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("clientId") Integer clientId) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         deviceService.deleteDevicesByClientId(clientId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -165,7 +154,6 @@ public class DeviceController {
     public ResponseEntity<Void> insertPerson(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("clientId") Integer clientId) {
         Claims claims = authenticate(authorizationHeader);
         authorizeAdmin(claims);
-
         personService.addPerson(clientId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

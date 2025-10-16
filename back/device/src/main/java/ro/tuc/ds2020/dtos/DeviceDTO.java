@@ -20,7 +20,6 @@ public class DeviceDTO extends RepresentationModel<DeviceDTO> {
         this.description=description;
         this.address=address;
         this.hourly=hourly;
-
     }
 
     public Integer getId() {

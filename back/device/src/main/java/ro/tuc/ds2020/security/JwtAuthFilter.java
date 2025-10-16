@@ -19,16 +19,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = extractTokenFromHeader(request);
-
         if (token != null && jwtUtils.validateToken(token)) {
             String username = jwtUtils.getNameFromToken(token);
-
         } else if (token != null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid or expired JWT token");
             return;
         }
-
         filterChain.doFilter(request, response);
     }
 

@@ -40,9 +40,7 @@ public class PersonController {
         PersonDTO person = personService.authenticate(personDTO.getName(), personDTO.getPassword());
         if (person != null) {
             String token = jwtUtils.generateToken(person.getId().toString(), person.getRole());
-
             return ResponseEntity.ok().body(token);
-
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
@@ -50,12 +48,9 @@ public class PersonController {
 
     @GetMapping()
     public ResponseEntity<List<PersonDTO>> getPersons(@RequestHeader("Authorization") String authorizationHeader) {
-
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
-
         String token = authorizationHeader.substring(7);
         Claims claims;
         try {
@@ -66,14 +61,10 @@ public class PersonController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
-
         String role = claims.get("role", String.class);
         if (!"admin".equals(role)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
-
         List<PersonDTO> dtos = personService.findPersons();
         for (PersonDTO dto : dtos) {
             Link personLink = linkTo(methodOn(PersonController.class)
@@ -88,11 +79,9 @@ public class PersonController {
 
     @PostMapping("/add2")
     public ResponseEntity<Integer> insertProsumer(@RequestHeader("Authorization") String authorizationHeader, @Valid @RequestBody PersonDetailsDTO personDTO) {
-
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
         String token = authorizationHeader.substring(7);
         Claims claims;
         try {
@@ -103,21 +92,15 @@ public class PersonController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
-
         String role = claims.get("role", String.class);
-
-
         System.out.println("Checking role: " + role);
         if (!"admin".equals(role)) {
             System.out.println("Access denied, role is not admin");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
         if (personService.isUsernameTaken(personDTO.getName())) {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
-
         Integer personID = personService.insert(personDTO);
         return new ResponseEntity<>(personID, HttpStatus.CREATED);
     }
@@ -126,23 +109,15 @@ public class PersonController {
 
     @PostMapping("/add")
     public ResponseEntity<?> insertProsumer2(@Valid @RequestBody PersonDetailsDTO personDTO) {
-
         if (personService.isUsernameTaken(personDTO.getName())) {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
-
-
         Integer personID = personService.insert(personDTO);
-
         if (personID != null) {
-
             PersonDetailsDTO person = personService.findPersonById(personID);
             String token = jwtUtils.generateToken(person.getId().toString(), person.getRole());
-
-
             return ResponseEntity.status(HttpStatus.CREATED).body(token);
         } else {
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while creating user");
         }
     }
@@ -153,12 +128,9 @@ public class PersonController {
     public ResponseEntity<PersonDetailsDTO> getPerson(
             @PathVariable("id") Integer personId,
             @RequestHeader("Authorization") String authorizationHeader) {
-
-
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
 
         String token = authorizationHeader.substring(7);
         Claims claims;
@@ -170,13 +142,10 @@ public class PersonController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
-
         String role = claims.get("role", String.class);
         if (!"admin".equals(role)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
 
         PersonDetailsDTO dto = personService.findPersonById(personId);
         if (dto == null) {

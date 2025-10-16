@@ -29,7 +29,6 @@ public class PersonDetailsDTO {
     public PersonDetailsDTO(Integer Id, String name,String role,String password) {
         this.Id = Id;
         this.name = name;
-
         this.role=role;
         this.password=password;
     }
@@ -49,8 +48,6 @@ public class PersonDetailsDTO {
     public void setName(String name) {
         this.name = name;
     }
-
-
 
     public String getRole() {
         return role;

@@ -24,7 +24,6 @@ public class DeviceDetailsDTO {
         this.description=description;
         this.address = address;
         this.hourly=hourly;
-
     }
 
     public DeviceDetailsDTO(Integer id, String description, String address, int hourly) {
@@ -32,7 +31,6 @@ public class DeviceDetailsDTO {
         this.description=description;
         this.address = address;
         this.hourly=hourly;
-
     }
 
     public Integer getId() {

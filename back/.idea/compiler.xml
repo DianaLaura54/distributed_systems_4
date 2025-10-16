@@ -7,11 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ds-2020 (1)" />
+        <module name="ds-2020" />
         <module name="ds-2020 (2)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ds-2020" target="1.8" />
       <module name="spring-boot-security-jwt" target="1.5" />
     </bytecodeTargetLevel>
   </component>

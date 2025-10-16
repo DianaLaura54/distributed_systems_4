@@ -50,7 +50,6 @@ public class PersonService {
         Person person = PersonBuilder.toEntity(personDTO);
         person = personRepository.save(person);
         LOGGER.debug("Person with id {} was inserted in db", person.getId());
-
         return person.getId();
 
     }
@@ -61,10 +60,8 @@ public class PersonService {
             LOGGER.error("Person with id {} was not found in db", id);
             throw new ResourceNotFoundException(Person.class.getSimpleName() + " with id: " + id);
         }
-
         personRepository.deleteById(id);
         LOGGER.info("Person with id {} was deleted from the db", id);
-
         return PersonBuilder.toPersonDetailsDTO(personOptional.get());
     }
 
@@ -75,7 +72,6 @@ public class PersonService {
             throw new ResourceNotFoundException(Person.class.getSimpleName() + " with id: " + id);
         }
         Person person = personOptional.get();
-
         person.setName(personDTO.getName());
         person.setRole(personDTO.getRole());
         person.setPassword(personDTO.getPassword());
@@ -86,20 +82,12 @@ public class PersonService {
 
 
     public PersonDTO authenticate(String name, String password) {
-
         Optional<Person> optionalPerson = personRepository.findByName(name);
-
-
         System.out.println("Attempting to authenticate user with Name: " + name + " and Password: " + password);
-
         if (optionalPerson.isPresent()) {
             Person person = optionalPerson.get();
-
             System.out.println("User found: " + person.getName());
-
-
             if (person.getPassword().equals(password)) {
-
                 return new PersonDTO(person.getId(), person.getName(), person.getRole(), person.getPassword());
             } else {
                 System.out.println("Authentication failed for user: " + name + ". Incorrect password.");
@@ -107,96 +95,66 @@ public class PersonService {
         } else {
             System.out.println("Authentication failed. No user found with the name: " + name);
         }
-
         return null;
     }
 
     public void show(int clientId) {
-
         try {
-
             String microserviceUrl = "http://localhost:8081/device/person/";
-
             microserviceUrl = microserviceUrl + clientId;
-
             ResponseEntity<String> response = restTemplate.postForEntity(microserviceUrl, clientId, String.class);
-
             LOGGER.debug("Response from microservice: {}", response.getBody());
         } catch (Exception e) {
             LOGGER.error("Error calling microservice: {}", e.getMessage());
-
         }
     }
+
     public void insert2(int idDevice,int clientId) {
 
         try {
-
             String microserviceUrl = "http://localhost:8081/device/person/insert";
-
             microserviceUrl = microserviceUrl + clientId + "/" + idDevice;
-
             ResponseEntity<String> response = restTemplate.postForEntity(microserviceUrl, null, String.class);
-
             LOGGER.debug("Response from microservice: {}", response.getBody());
         } catch (Exception e) {
             LOGGER.error("Error calling microservice: {}", e.getMessage());
-
         }
-
         LOGGER.debug("Person with id {} was inserted in db", clientId);
-
     }
+
     public void update2(int idDevice,int clientId) {
-
         try {
-
             String microserviceUrl = "http://localhost:8081/device/person/update";
-
             microserviceUrl = microserviceUrl + clientId + "/" + idDevice;
-
             ResponseEntity<String> response = restTemplate.postForEntity(microserviceUrl, null, String.class);
-
             LOGGER.debug("Response from microservice: {}", response.getBody());
         } catch (Exception e) {
             LOGGER.error("Error calling microservice: {}", e.getMessage());
-
         }
-
     }
+
     public void delete2(int idDevice,int clientId) {
-
         try {
-
             String microserviceUrl = "http://localhost:8081/device/person/delete";
-
             microserviceUrl = microserviceUrl + clientId + "/" + idDevice;
-
             ResponseEntity<String> response = restTemplate.postForEntity(microserviceUrl, null, String.class);
-
             LOGGER.debug("Response from microservice: {}", response.getBody());
         } catch (Exception e) {
             LOGGER.error("Error calling microservice: {}", e.getMessage());
-
         }
-
     }
+
     public void insertPerson(int clientId) {
-
         try {
-
             String microserviceUrl = "http://localhost:8081/device/";
-
             microserviceUrl = microserviceUrl + clientId;
-
             ResponseEntity<String> response = restTemplate.postForEntity(microserviceUrl, null, String.class);
-
             LOGGER.debug("Response from microservice: {}", response.getBody());
         } catch (Exception e) {
             LOGGER.error("Error calling microservice: {}", e.getMessage());
-
         }
-
     }
+
     public boolean isUsernameTaken(String name) {
         return personRepository.existsByName(name);
     }

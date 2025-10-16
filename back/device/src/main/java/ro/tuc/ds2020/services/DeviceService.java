@@ -45,7 +45,6 @@ public class DeviceService {
         } else {
             LOGGER.info("Found {} devices for person with id {}", devices.size(), clientId);
         }
-
         // Convert List<Device> to List<DeviceDetailsDTO> using the provided method
         return devices.stream()
                 .map(DeviceBuilder::toDeviceDetailsDTO) // Use the new method for mapping
@@ -60,7 +59,6 @@ public class DeviceService {
             LOGGER.error("Device with id {} was not found in db", id);
             throw new ResourceNotFoundException(Device.class.getSimpleName() + " with id: " + id);
         }
-
         return DeviceBuilder.toDeviceDetailsDTO(prosumerOptional.get());
     }
 
@@ -70,13 +68,11 @@ public class DeviceService {
             LOGGER.error("Device with id {} was not found in db", id);
             throw new ResourceNotFoundException(Device.class.getSimpleName() + " with id: " + id);
         }
-
         DeviceRepository.deleteById(id);
         LOGGER.info("Device with id {} was deleted from the db", id);
 
         return DeviceBuilder.toDeviceDetailsDTO(prosumerOptional.get());
     }
-
 
 
     public DeviceDetailsDTO updateDevice(Integer id, DeviceDetailsDTO DeviceDTO) {
@@ -86,7 +82,6 @@ public class DeviceService {
             throw new ResourceNotFoundException(Device.class.getSimpleName() + " with id: " + id);
         }
         Device Device = DeviceOptional.get();
-
         Device.setDescription(DeviceDTO.getDescription());
         Device.setAddress(DeviceDTO.getAddress());
         Device.setHourly(DeviceDTO.getHourly());
@@ -107,66 +102,49 @@ public class DeviceService {
 
         Person person = PersonRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Person with ID " + clientId + " not found."));
-
         System.out.println("Found existing Person with ID " + person.getId());
-
         Device device = DeviceRepository.findById(deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Device with ID " + deviceId + " not found."));
-
         System.out.println("Found Device with ID " + device.getId());
-
         if (device.getPerson() != null && !device.getPerson().getId().equals(clientId)) {
             System.out.println("Device ID " + device.getId() + " is already assigned to another Person (ID: " + device.getPerson().getId() + ").");
             throw new IllegalStateException("Device with ID " + deviceId + " is already assigned to a different Person.");
         }
-
         device.setPerson(person);
         System.out.println("Linking Person ID " + person.getId() + " to Device ID " + device.getId());
-
         DeviceRepository.save(device);
-
         System.out.println("Successfully assigned Device ID " + deviceId + " to Person ID " + clientId);
     }
 
 
     public void updatePersonWithClientId(Integer clientId, Integer deviceId) {
-
         Person person = PersonRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Person with ID " + clientId + " not found."));
-
         System.out.println("Found existing Person with ID " + person.getId());
-
         Optional<Device> optionalDevice = DeviceRepository.findById(deviceId);
         if (optionalDevice.isPresent()) {
             Device device = optionalDevice.get();
             System.out.println("Found Device with ID " + device.getId());
-
             device.setPerson(person);
-
             System.out.println("Updated Device ID " + device.getId() + " to Person ID " + person.getId());
-
             PersonRepository.save(person);
             DeviceRepository.save(device);
-
             System.out.println("Successfully updated Device ID " + deviceId + " to Person ID " + clientId);
         } else {
             System.out.println("Device with ID " + deviceId + " not found.");
             throw new ResourceNotFoundException("Device with ID " + deviceId + " not found.");
         }
     }
+
     public void deleteDevicesByClientId(Integer idClient) {
-
         List<Device> deviceList = DeviceRepository.findAll();
-
         List<Device> assignedDevices = deviceList.stream()
                 .filter(device -> device.getPerson() != null && device.getPerson().getId().equals(idClient))
                 .collect(Collectors.toList());
-
         for (Device device : assignedDevices) {
             device.setPerson(null);
             DeviceRepository.save(device);
         }
-
         PersonRepository.deleteById(idClient);
     }
 

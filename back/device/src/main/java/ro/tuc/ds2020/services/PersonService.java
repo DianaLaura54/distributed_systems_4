@@ -23,44 +23,29 @@ public class PersonService {
 
     @Autowired
     public PersonService(PersonRepository PersonRepository,DeviceRepository DeviceRepository) {
-
         this.PersonRepository = PersonRepository;
         this.DeviceRepository = DeviceRepository;
     }
     public void addPerson(Integer clientId) {
-
         Person person = new Person();
         person.setId(clientId);
-
         PersonRepository.save(person);
         System.out.println(clientId);
     }
+
     public List<PersonDTO> findPersons() {
         List<Device> deviceList = DeviceRepository.findAll();
-
-
         List<PersonDTO> personDTOList = new ArrayList<>();
-
         for (Device device : deviceList) {
-
             Person person = device.getPerson();
-
-
             PersonDTO personDTO = new PersonDTO();
-
-
             if (person != null) {
                 personDTO.setId(person.getId());
-
             } else {
-
                 personDTO.setId(null);
-
             }
-
             personDTOList.add(personDTO);
         }
-
         return personDTOList;
     }
 }

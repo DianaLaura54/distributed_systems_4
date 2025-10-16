@@ -25,7 +25,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // Secure all other endpoints
                 )
                 .addFilterBefore(new JwtAuthFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class); // Add filter
-
         return http.build();
     }
 
